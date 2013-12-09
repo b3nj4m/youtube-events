@@ -29,5 +29,5 @@ define(['youtube-events', 'swfobject'], function(YoutubeEvents, swfobject) {
         timeElem.textContent = time;
       });
     }
-  }
+  };
 });
