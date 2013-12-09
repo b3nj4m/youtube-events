@@ -1,7 +1,7 @@
 youtube-events
 ==============
 
-A better alternative to the outdated YouTube Javascript API.
+A better alternative to the outdated event handling in the YouTube Javascript API.
 
 ```javascript
 //YouTube JS API will execute this function :/
