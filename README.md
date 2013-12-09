@@ -7,8 +7,6 @@ A better alternative to the outdated YouTube Javascript API.
 //YouTube JS API will execute this function :/
 window.onYouTubePlayerReady = function(id) {
   if (id === playerApiId) {
-    var timeElem = document.getElementById('current-time');
-
     ytEvents = new YoutubeEvents(document.getElementById(playerId), {interval: 5});
 
     ytEvents.on('state-changed', function(state) {
@@ -22,7 +20,7 @@ window.onYouTubePlayerReady = function(id) {
     //receive a 'time' event every `interval` seconds (in this example 5s) the video has played
     //e.g. at time 0:00, 0:05, 0:10, ...
     ytEvents.on('time', function(time) {
-      timeElem.textContent = time;
+      window.console.log('video has reached', time, 'seconds');
     });
   }
 };
