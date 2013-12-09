@@ -26,8 +26,12 @@ define(['youtube-events', 'swfobject'], function(YoutubeEvents, swfobject) {
 
       ytEvents = new YoutubeEvents(document.getElementById(playerId), {interval: 5});
 
+      ytEvents.on('state-changed', function(state) {
+        window.console.log('state changed to: ', state);
+      });
+
       ytEvents.on('playing paused', function() {
-        window.console.log('something happened!');
+        window.console.log('player started playing or was paused!');
       });
 
       ytEvents.on('time', function(time) {

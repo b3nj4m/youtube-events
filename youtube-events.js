@@ -72,7 +72,9 @@
     YoutubeEvents.prototype.stateChange = function(state) {
       for (var key in YT.PlayerState) {
         if (YT.PlayerState.hasOwnProperty(key) && state === YT.PlayerState[key]) {
-          this.trigger(key.toLowerCase(), this.player.getCurrentTime());
+          evnt = key.toLowerCase();
+          this.trigger(evnt, this.player.getCurrentTime());
+          this.trigger('state-changed', evnt);
         }
       }
 

@@ -10,8 +10,12 @@ window.onYouTubePlayerReady = function(id) {
 
     ytEvents = new YoutubeEvents(document.getElementById(playerId), {interval: 5});
 
+    ytEvents.on('state-changed', function(state) {
+      window.console.log('state changed to: ', state);
+    });
+
     ytEvents.on('playing paused', function() {
-      window.console.log('something happened!');
+      window.console.log('player started playing or was paused!');
     });
 
     //receive a 'time' event every 5th second the video has played
