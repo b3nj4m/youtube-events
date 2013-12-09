@@ -24,7 +24,7 @@ define(['youtube-events', 'swfobject'], function(YoutubeEvents, swfobject) {
     if (id === playerApiId) {
       var timeElem = document.getElementById('current-time');
 
-      ytEvents = new YoutubeEvents(document.getElementById(playerId));
+      ytEvents = new YoutubeEvents(document.getElementById(playerId), {interval: 5});
       ytEvents.on('time', function(time) {
         timeElem.textContent = time;
       });
