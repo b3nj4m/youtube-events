@@ -4,6 +4,7 @@ youtube-events
 A better alternative to the outdated YouTube Javascript API.
 
 ```javascript
+//YouTube JS API will execute this function :/
 window.onYouTubePlayerReady = function(id) {
   if (id === playerApiId) {
     var timeElem = document.getElementById('current-time');
