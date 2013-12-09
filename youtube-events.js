@@ -1,10 +1,5 @@
+//TODO need to mess with onYouTubePlayerReady?
 (function() {
-  var error = function(message) {
-    if (window.console !== undefined && window.console.error !== undefined) {
-      window.console.error(message);
-    }
-  };
-
   var log = function(message) {
     if (window.console !== undefined && window.console.log !== undefined) {
       window.console.log(message);
@@ -20,7 +15,11 @@
   var defineModule = function(YT) {
     var YoutubeEvents = function(player, options) {
       if (typeof player === 'undefined') {
-        error('a reference to the YouTube player is a required argument');
+        throw new Error('a reference to the YouTube player is a required argument');
+      }
+
+      if (player.playVideo === undefined) {
+        throw new Error('The YouTube player is not ready. You may be forgetting about onYouTubePlayerReady...');
       }
 
       this.player = player;
@@ -37,6 +36,7 @@
     };
 
     //video time interval between events in seconds (e.g. interval of 5s will result in events at video time 0:00, 0:05, 0:10, ...)
+    //this value can be a float
     YoutubeEvents.prototype.interval = 5;
 
     //how often to poll the video time in ms
@@ -53,15 +53,17 @@
       if (this.timeout !== undefined) {
         window.clearTimeout(this.timeout);
         delete this.timeout;
+        delete this.lastEventTime;
         this.isPolling = false;
       }
     };
 
     YoutubeEvents.prototype._pollCallback = function() {
       var currentTime = this.player.getCurrentTime();
-      if (this.lastEventTime === undefined || (this.lastEventTime !== undefined && currentTime - this.lastEventTime >= this.interval)) {
-        this.lastEventTime = currentTime;
-        this.trigger('time', currentTime);
+      if (this.lastEventTime === undefined || currentTime - this.lastEventTime >= this.interval) {
+        //round triggered value to nearest integer multiple of interval
+        this.lastEventTime = Math.round(currentTime / this.interval) * this.interval;
+        this.trigger('time', this.lastEventTime);
       }
 
       this.timeout = window.setTimeout(this.pollCallback, this.pollInterval);
