@@ -1,6 +1,8 @@
 youtube-events
 ==============
 
+A better alternative to the outdated YouTube Javascript API.
+
 ```javascript
 window.onYouTubePlayerReady = function(id) {
   if (id === playerApiId) {
