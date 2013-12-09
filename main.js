@@ -25,6 +25,11 @@ define(['youtube-events', 'swfobject'], function(YoutubeEvents, swfobject) {
       var timeElem = document.getElementById('current-time');
 
       ytEvents = new YoutubeEvents(document.getElementById(playerId), {interval: 5});
+
+      ytEvents.on('playing paused', function() {
+        window.console.log('something happened!');
+      });
+
       ytEvents.on('time', function(time) {
         timeElem.textContent = time;
       });
