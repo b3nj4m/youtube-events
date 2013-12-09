@@ -26,3 +26,9 @@ window.onYouTubePlayerReady = function(id) {
   }
 };
 ```
+
+Dependencies
+------------
+
+- [swfobject.js](https://code.google.com/p/swfobject/)
+- [YouTube JS API](https://developers.google.com/youtube/js_api_reference) (Download is at http://www.youtube.com/player_api)
