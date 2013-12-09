@@ -15,6 +15,10 @@ window.onYouTubePlayerReady = function(id) {
 
     ytEvents.on('playing paused', function() {
       window.console.log('player started playing or was paused!');
+
+      //use off to remove event callbacks
+      //off also accepts an optional callback to compare with
+      ytEvents.off('paused');
     });
 
     //receive a 'time' event every `interval` seconds (in this example 5s) the video has played

@@ -107,25 +107,44 @@
     };
 
     YoutubeEvents.prototype.off = function(eventName, callback) {
-      if (eventName in this.registry) {
-        var handlersToKeep = [];
-        if (typeof callback !== 'undefined') {
-          for (var i in this.registry[eventName]) {
-            if (this.registry[eventName][i] !== callback) {
-              handlersToKeep.push(this.registry[eventName][i]);
+      if (typeof eventName === 'undefined') {
+        if (typeof callback === 'undefined') {
+          this.registry = {};
+        }
+        else {
+          for (var key in this.registry) {
+            if (this.registry.hasOwnProperty(key)) {
+              this._offHelper(key, callback);
             }
           }
         }
-        this.registry[eventName] = handlersToKeep;
+      }
+      else if (eventName in this.registry) {
+        this._offHelper(eventName, callback);
       }
 
       return this;
     };
 
+    YoutubeEvents.prototype._offHelper = function(eventName, callback) {
+      var handlersToKeep = [];
+      if (typeof callback !== 'undefined') {
+        for (var i in this.registry[eventName]) {
+          if (this.registry[eventName][i] !== callback) {
+            handlersToKeep.push(this.registry[eventName][i]);
+          }
+        }
+      }
+      this.registry[eventName] = handlersToKeep;
+    };
+
     YoutubeEvents.prototype.trigger = function(eventName, data) {
       if (eventName in this.registry) {
-        for (var i in this.registry[eventName]) {
-          this.registry[eventName][i].call(this, data);
+        //this.registry[eventName] may be replaced inside a callback if one of them calls .off()
+        //so, we need to save a reference to it before we start the loop
+        var callbacks = this.registry[eventName];
+        for (var i in callbacks) {
+          callbacks[i].call(this, data);
         }
       }
       return this;

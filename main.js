@@ -32,6 +32,8 @@ define(['youtube-events', 'swfobject'], function(YoutubeEvents, swfobject) {
 
       ytEvents.on('playing paused', function() {
         window.console.log('player started playing or was paused!');
+
+        ytEvents.off('paused');
       });
 
       ytEvents.on('time', function(time) {
