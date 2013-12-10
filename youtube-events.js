@@ -60,11 +60,11 @@
     };
 
     YoutubeEvents.prototype.updateCurrentBucket = function() {
-      var currentTime = this.player.getCurrentTime();
+      this.currentTime = this.player.getCurrentTime();
       var bucket = Math.floor(currentTime / this.interval) * this.interval;
       if (this.currentBucket !== bucket) {
         this.currentBucket = bucket;
-        this.trigger('bucket', this.currentBucket);
+        this.trigger('bucket', this.currentTime, this.currentBucket);
       }
     };
 
@@ -85,9 +85,8 @@
       for (var key in YT.PlayerState) {
         if (YT.PlayerState.hasOwnProperty(key) && state === YT.PlayerState[key]) {
           evnt = key.toLowerCase();
-          var currentTime = this.player.getCurrentTime();
-          this.trigger(evnt, currentTime);
-          this.trigger('state-changed', evnt, currentTime);
+          this.trigger(evnt, this.currentTime);
+          this.trigger('state-changed', this.currentTime, evnt);
         }
       }
     };
