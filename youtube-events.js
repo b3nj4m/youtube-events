@@ -15,7 +15,7 @@
   var defineModule = function(YT) {
     var YoutubeEvents = function(player, options) {
       if (typeof player === 'undefined') {
-        throw new Error('a reference to the YouTube player is a required argument');
+        throw new Error('A reference to the YouTube player is a required argument.');
       }
 
       if (player.playVideo === undefined) {
@@ -87,8 +87,12 @@
     };
 
     YoutubeEvents.prototype.setupPlayerEvents = function() {
-      //TODO make sure function name is unique
-      var callbackName = '__youtubeEventsPlayerStateChange';
+      //make sure function name is unique
+      var callbackNamePrefix = '__youtubeEventsPlayerStateChange';
+      var callbackName = callbackNamePrefix;
+      while (typeof window[callbackName] !== 'undefined') {
+        callbackName = callbackNamePrefix + Math.random().toString().replace(/\.-/g, '');
+      }
       window[callbackName] = bind(this.stateChange, this);
       this.player.addEventListener('onStateChange', callbackName);
     };
