@@ -22,8 +22,8 @@
           <h2 id="project_tagline">A better alternative to the outdated event handling in the YouTube Javascript API.</h2>
 
             <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/b3nj4m/youtube-events/archive/0.2.0.zip">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/b3nj4m/youtube-events/archive/0.2.0.tar.gz">Download this project as a tar.gz file</a>
+              <a class="zip_download_link" href="https://github.com/b3nj4m/youtube-events/archive/0.4.0.zip">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/b3nj4m/youtube-events/archive/0.4.0.tar.gz">Download this project as a tar.gz file</a>
             </section>
         </header>
     </div>
@@ -32,30 +32,63 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
 
-<div class="highlight"><pre><span class="c1">//YouTube JS API will execute this function :/</span>
-<span class="nb">window</span><span class="p">.</span><span class="nx">onYouTubePlayerReady</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+        <div id="ytapiplayer">
+          You need Flash player 8+ and JavaScript enabled to view this video.
+        </div>
+        <script type="text/javascript" src="require.js" data-main="main.js"></script>
+
+        <div>The video timeline is divided into 5 second buckets. Below is some contextual content for the current bucket.</div>
+        <div id="contextual-content"></div>
+
+<div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">onYouTubePlayerReady</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">playerApiId</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">ytEvents</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YoutubeEvents</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">playerId</span><span class="p">),</span> <span class="p">{</span><span class="nx">interval</span><span class="o">:</span> <span class="mi">5</span><span class="p">});</span>
+    <span class="kd">var</span> <span class="nx">interval</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
 
-    <span class="nx">ytEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;state-changed&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">state</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nb">window</span><span class="p">.</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;state changed to: &#39;</span><span class="p">,</span> <span class="nx">state</span><span class="p">);</span>
-    <span class="p">});</span>
+    <span class="nx">ytEvents</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YoutubeEvents</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">playerId</span><span class="p">),</span> <span class="p">{</span><span class="nx">interval</span><span class="o">:</span> <span class="nx">interval</span><span class="p">});</span>
 
-    <span class="nx">ytEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;playing paused&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="nb">window</span><span class="p">.</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;player started playing or was paused!&#39;</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">contentElem</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;contextual-content&#39;</span><span class="p">);</span>
 
-      <span class="c1">//use off to remove event callbacks</span>
-      <span class="c1">//off also accepts an optional callback to compare with</span>
-      <span class="nx">ytEvents</span><span class="p">.</span><span class="nx">off</span><span class="p">(</span><span class="s1">&#39;paused&#39;</span><span class="p">);</span>
-    <span class="p">});</span>
-
-    <span class="c1">//receive a &#39;time&#39; event every `interval` seconds (in this example 5s) the video has played</span>
-    <span class="c1">//e.g. at time 0:00, 0:05, 0:10, ...</span>
-    <span class="nx">ytEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">time</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nb">window</span><span class="p">.</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;video has reached&#39;</span><span class="p">,</span> <span class="nx">time</span><span class="p">,</span> <span class="s1">&#39;seconds&#39;</span><span class="p">);</span>
+    <span class="nx">ytEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;bucket&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">time</span><span class="p">,</span> <span class="nx">bucket</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">contentElem</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;This is snippet of contextual content for bucket [&#39;</span> <span class="o">+</span> <span class="nx">bucket</span> <span class="o">+</span> <span class="s1">&#39;s, &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">bucket</span> <span class="o">+</span> <span class="nx">interval</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;s)&#39;</span><span class="p">;</span>
     <span class="p">});</span>
   <span class="p">}</span>
 <span class="p">};</span>
+</pre></div>
+
+        <h3>Usage</h3>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">interval</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="c1">//interval in seconds used to divide the video timeline into buckets</span>
+  <span class="nx">pollInterval</span><span class="o">:</span> <span class="mi">100</span> <span class="c1">//interval in milliseconds at which the playing video will be polled for its current position</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">youtubeEvents</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YoutubeEvents</span><span class="p">(</span><span class="nx">playerElem</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+
+<span class="c1">//The time argument that all event handlers receive represents the current position in the video timeline in seconds.</span>
+
+<span class="c1">//unstarted is triggered when the player is loaded, but the video has not been started</span>
+<span class="nx">youtubeEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;unstarted&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">time</span><span class="p">)</span> <span class="p">{});</span>
+
+<span class="c1">//playing is triggered when the video starts playing</span>
+<span class="nx">youtubeEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;playing&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">time</span><span class="p">)</span> <span class="p">{});</span>
+
+<span class="c1">//paused is triggered when the video is paused</span>
+<span class="nx">youtubeEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;paused&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">time</span><span class="p">)</span> <span class="p">{});</span>
+
+<span class="c1">//buffering is triggered when the video is trying to play, but must wait for more data</span>
+<span class="nx">youtubeEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;buffering&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">time</span><span class="p">)</span> <span class="p">{});</span>
+
+<span class="c1">//ended is triggered when the video plays to the end</span>
+<span class="nx">youtubeEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;ended&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">time</span><span class="p">)</span> <span class="p">{});</span>
+
+<span class="c1">//state-changed is triggered whenever the state changes</span>
+<span class="c1">//the state can be one of: &#39;unstarted&#39;, &#39;playing&#39;, &#39;paused&#39;, &#39;buffering&#39;, &#39;ended&#39;</span>
+<span class="nx">youtubeEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;state-changed&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">time</span><span class="p">,</span> <span class="nx">stateName</span><span class="p">)</span> <span class="p">{});</span>
+
+<span class="c1">//bucket is triggered whenever the current bucket on the video timeline changes</span>
+<span class="c1">//note that this can happen whether the video is playing or paused</span>
+<span class="c1">//the argument bucket represents the left boundary of the current bucket.</span>
+<span class="nx">youtubeEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;bucket&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">time</span><span class="p">,</span> <span class="nx">bucket</span><span class="p">)</span> <span class="p">{});</span>
 </pre></div>
 
       </section>
