@@ -53,17 +53,17 @@
       if (this.timeout !== undefined) {
         window.clearTimeout(this.timeout);
         delete this.timeout;
-        delete this.lastEventTime;
+        delete this.currentBucket;
         this.isPolling = false;
       }
     };
 
     YoutubeEvents.prototype._pollCallback = function() {
       var currentTime = this.player.getCurrentTime();
-      if (this.lastEventTime === undefined || currentTime - this.lastEventTime >= this.interval) {
-        //round triggered value to nearest integer multiple of interval
-        this.lastEventTime = Math.round(currentTime / this.interval) * this.interval;
-        this.trigger('time', this.lastEventTime);
+      var bucket = Math.floor(currentTime / this.interval) * this.interval;
+      if (this.currentBucket !== bucket) {
+        this.currentBucket = bucket;
+        this.trigger('time', this.currentBucket);
       }
 
       this.timeout = window.setTimeout(this.pollCallback, this.pollInterval);
