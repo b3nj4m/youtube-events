@@ -1,0 +1,6 @@
+{
+  "name": "youtube-events",
+  "version": "0.2.0",
+  "main": ["./youtube-events.js"],
+  "dependencies": {}
+}
