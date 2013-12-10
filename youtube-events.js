@@ -61,7 +61,7 @@
 
     YoutubeEvents.prototype.updateCurrentBucket = function() {
       this.currentTime = this.player.getCurrentTime();
-      var bucket = Math.floor(currentTime / this.interval) * this.interval;
+      var bucket = Math.floor(this.currentTime / this.interval) * this.interval;
       if (this.currentBucket !== bucket) {
         this.currentBucket = bucket;
         this.trigger('bucket', this.currentTime, this.currentBucket);
