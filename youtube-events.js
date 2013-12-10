@@ -64,7 +64,7 @@
       var bucket = Math.floor(currentTime / this.interval) * this.interval;
       if (this.currentBucket !== bucket) {
         this.currentBucket = bucket;
-        this.trigger('time', this.currentBucket);
+        this.trigger('bucket', this.currentBucket);
       }
     };
 
@@ -74,6 +74,14 @@
     };
 
     YoutubeEvents.prototype.stateChange = function(state) {
+      if (state === YT.PlayerState.PLAYING) {
+        this.startPolling();
+      }
+      else {
+        this.stopPolling();
+        this.updateCurrentBucket();
+      }
+
       for (var key in YT.PlayerState) {
         if (YT.PlayerState.hasOwnProperty(key) && state === YT.PlayerState[key]) {
           evnt = key.toLowerCase();
@@ -81,14 +89,6 @@
           this.trigger(evnt, currentTime);
           this.trigger('state-changed', evnt, currentTime);
         }
-      }
-
-      if (state === YT.PlayerState.PLAYING) {
-        this.startPolling();
-      }
-      else {
-        this.stopPolling();
-        this.updateCurrentBucket();
       }
     };
 
