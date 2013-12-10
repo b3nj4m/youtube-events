@@ -50,22 +50,26 @@
     };
 
     YoutubeEvents.prototype.stopPolling = function() {
-      if (this.timeout !== undefined) {
-        window.clearTimeout(this.timeout);
-        delete this.timeout;
-        delete this.currentBucket;
+      if (this.isPolling) {
+        if (this.timeout !== undefined) {
+          window.clearTimeout(this.timeout);
+          delete this.timeout;
+        }
         this.isPolling = false;
       }
     };
 
-    YoutubeEvents.prototype._pollCallback = function() {
+    YoutubeEvents.prototype.updateCurrentBucket = function() {
       var currentTime = this.player.getCurrentTime();
       var bucket = Math.floor(currentTime / this.interval) * this.interval;
       if (this.currentBucket !== bucket) {
         this.currentBucket = bucket;
         this.trigger('time', this.currentBucket);
       }
+    };
 
+    YoutubeEvents.prototype._pollCallback = function() {
+      this.updateCurrentBucket();
       this.timeout = window.setTimeout(this.pollCallback, this.pollInterval);
     };
 
@@ -73,8 +77,9 @@
       for (var key in YT.PlayerState) {
         if (YT.PlayerState.hasOwnProperty(key) && state === YT.PlayerState[key]) {
           evnt = key.toLowerCase();
-          this.trigger(evnt, this.player.getCurrentTime());
-          this.trigger('state-changed', evnt);
+          var currentTime = this.player.getCurrentTime();
+          this.trigger(evnt, currentTime);
+          this.trigger('state-changed', evnt, currentTime);
         }
       }
 
@@ -83,6 +88,7 @@
       }
       else {
         this.stopPolling();
+        this.updateCurrentBucket();
       }
     };
 
@@ -142,13 +148,14 @@
       this.registry[eventName] = handlersToKeep;
     };
 
-    YoutubeEvents.prototype.trigger = function(eventName, data) {
+    YoutubeEvents.prototype.trigger = function(eventName) {
       if (eventName in this.registry) {
         //this.registry[eventName] may be replaced inside a callback if one of them calls .off()
         //so, we need to save a reference to it before we start the loop
         var callbacks = this.registry[eventName];
+        var args = Array.prototype.slice.call(arguments, 1);
         for (var i in callbacks) {
-          callbacks[i].call(this, data);
+          callbacks[i].apply(this, args);
         }
       }
       return this;
