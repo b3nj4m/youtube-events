@@ -22,7 +22,7 @@ define(['youtube-events', 'swfobject'], function(YoutubeEvents, swfobject) {
 
   var timeElem = document.getElementById('current-time');
 
-  ytEvents = new YoutubeEvents(document.getElementById(playerId), playerApiId, {interval: 5});
+  ytEvents = new YoutubeEvents(document.getElementById(playerId), playerApiId, {bucketSize: 5});
 
   ytEvents.on('ready', function(time) {
     window.console.log('player is ready');

@@ -50,7 +50,7 @@
       this.id = id;
 
       if (typeof options !== 'undefined') {
-        this.interval = options.interval || this.interval;
+        this.bucketSize = options.bucketSize || this.bucketSize;
       }
 
       this.registry = {};
@@ -60,9 +60,9 @@
       onReady(this.id, bind(this.setupPlayerEvents, this));
     };
 
-    //video time interval between events in seconds (e.g. interval of 5s will result in events at video time 0:00, 0:05, 0:10, ...)
+    //size of video time buckets in seconds (e.g. bucketSize of 5s will result in events at video time 0:00, 0:05, 0:10, ...)
     //this value can be a float
-    YoutubeEvents.prototype.interval = 5;
+    YoutubeEvents.prototype.bucketSize = 5;
 
     //how often to poll the video time in ms
     YoutubeEvents.prototype.pollInterval = 100;
@@ -86,7 +86,7 @@
 
     YoutubeEvents.prototype.updateCurrentBucket = function() {
       this.currentTime = this.player.getCurrentTime();
-      var bucket = Math.floor(this.currentTime / this.interval) * this.interval;
+      var bucket = Math.floor(this.currentTime / this.bucketSize) * this.bucketSize;
       if (this.currentBucket !== bucket) {
         this.currentBucket = bucket;
         this.trigger('bucket', this.currentTime, this.currentBucket);
