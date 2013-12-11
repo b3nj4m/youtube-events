@@ -3,7 +3,10 @@ var options = {
   pollInterval: 100 //interval in milliseconds at which the playing video will be polled for its current position
 };
 
-var youtubeEvents = new YoutubeEvents(playerElem, options);
+//playerElem is a required reference to the root DOM element of the embedded player (usually an <object> when using swfobject)
+//playerApiId is a required reference to the playerapiid that you included in the query string of your YouTube embed
+//options are optional, defaults are shown above
+var youtubeEvents = new YoutubeEvents(playerElem, playerApiId, options);
 
 //The time argument that all event handlers receive represents the current position in the video timeline in seconds.
 
