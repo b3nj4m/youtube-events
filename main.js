@@ -20,25 +20,25 @@ define(['youtube-events', 'swfobject'], function(YoutubeEvents, swfobject) {
   var atts = { id: playerId };
   swfobject.embedSWF("http://www.youtube.com/v/jFdKsbNhfmQ?enablejsapi=1&playerapiid=" + playerApiId + "&version=3", containerId, "425", "356", "8", null, null, params, atts);
 
-  window.onYouTubePlayerReady = function(id) {
-    if (id === playerApiId) {
-      var timeElem = document.getElementById('current-time');
+  var timeElem = document.getElementById('current-time');
 
-      ytEvents = new YoutubeEvents(document.getElementById(playerId), {interval: 5});
+  ytEvents = new YoutubeEvents(document.getElementById(playerId), playerApiId, {interval: 5});
 
-      ytEvents.on('state-changed', function(state) {
-        window.console.log('state changed to: ', state);
-      });
+  ytEvents.on('ready', function(time) {
+    window.console.log('player is ready');
+  });
 
-      ytEvents.on('playing paused', function() {
-        window.console.log('player started playing or was paused!');
+  ytEvents.on('state-changed', function(time, state) {
+    window.console.log('state changed to: ', state);
+  });
 
-        ytEvents.off('paused');
-      });
+  ytEvents.on('playing paused', function(time) {
+    window.console.log('player started playing or was paused!');
 
-      ytEvents.on('time', function(time) {
-        timeElem.textContent = time;
-      });
-    }
-  };
+    ytEvents.off('paused');
+  });
+
+  ytEvents.on('bucket', function(time, bucket) {
+    timeElem.textContent = bucket;
+  });
 });
