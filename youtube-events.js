@@ -26,7 +26,7 @@
 
   var onReady = function(id, fn) {
     if (youtubePlayerReady[id]) {
-      fn.call(this);
+      window.setTimeout(function() { fn.call(this) }, 0);
     }
     else {
       if (readyQueues[id] === undefined) {
