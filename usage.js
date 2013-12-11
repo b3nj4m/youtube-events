@@ -7,6 +7,9 @@ var youtubeEvents = new YoutubeEvents(playerElem, options);
 
 //The time argument that all event handlers receive represents the current position in the video timeline in seconds.
 
+//ready is triggered when the YouTube player is ready (triggered by defining window.onYouTubePlayerReady. Do not overwrite plz.)
+youtubeEvents.on('ready', function(time) {});
+
 //unstarted is triggered when the player is loaded, but the video has not been started
 youtubeEvents.on('unstarted', function(time) {});
 

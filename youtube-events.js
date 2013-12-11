@@ -1,4 +1,3 @@
-//TODO need to mess with onYouTubePlayerReady?
 (function() {
   var log = function(message) {
     if (window.console !== undefined && window.console.log !== undefined) {
@@ -12,17 +11,40 @@
     };
   };
 
+  //'listen' for the youtube player to be ready by waiting for the global callback onYouTubePlayerReady to be called :/
+  var youtubePlayerReady = false;
+  var readyQueue = [];
+  var args;
+  window.onYouTubePlayerReady = function(id) {
+    youtubePlayerReady = true;
+    args = arguments;
+    
+    for (var i in readyQueue) {
+      readyQueue[i].apply(this, arguments);
+    }
+  };
+
+  var onReady = function(fn) {
+    if (youtubePlayerReady) {
+      fn.apply(this, args);
+    }
+    else {
+      readyQueue.push(fn);
+    }
+  };
+
   var defineModule = function(YT) {
-    var YoutubeEvents = function(player, options) {
+    var YoutubeEvents = function(player, id, options) {
       if (typeof player === 'undefined') {
         throw new Error('A reference to the YouTube player is a required argument.');
       }
 
-      if (player.playVideo === undefined) {
-        throw new Error('The YouTube player is not ready. You may be forgetting about onYouTubePlayerReady...');
+      if (typeof id === 'undefined') {
+        throw new Error('The API ID is a required argument.');
       }
 
       this.player = player;
+      this.id = id;
 
       if (typeof options !== 'undefined') {
         this.interval = options.interval || this.interval;
@@ -32,7 +54,7 @@
 
       this.pollCallback = bind(this._pollCallback, this);
 
-      this.setupPlayerEvents();
+      onReady(bind(this.setupPlayerEvents, this));
     };
 
     //video time interval between events in seconds (e.g. interval of 5s will result in events at video time 0:00, 0:05, 0:10, ...)
@@ -100,6 +122,15 @@
       }
       window[callbackName] = bind(this.stateChange, this);
       this.player.addEventListener('onStateChange', callbackName);
+
+      onReady(bind(this.ready, this));
+    };
+
+    YoutubeEvents.prototype.ready = function(id) {
+      if (this.id === id) {
+        this.updateCurrentBucket();
+        this.trigger('ready', this.currentTime);
+      }
     };
 
     YoutubeEvents.prototype.on = function(eventName, callback) {
