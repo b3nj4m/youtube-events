@@ -20,13 +20,13 @@ define(['youtube-events', 'swfobject'], function(YoutubeEvents, swfobject) {
   var atts = { id: playerId };
   swfobject.embedSWF("http://www.youtube.com/v/jFdKsbNhfmQ?enablejsapi=1&playerapiid=" + playerApiId + "&version=3", containerId, "660", "410", "8", null, null, params, atts);
 
-  var interval = 5;
+  var bucketSize = 5;
 
-  ytEvents = new YoutubeEvents(document.getElementById(playerId), playerApiId, {interval: interval});
+  ytEvents = new YoutubeEvents(document.getElementById(playerId), playerApiId, {bucketSize: bucketSize});
 
   var contentElem = document.getElementById('contextual-content');
 
   ytEvents.on('bucket', function(time, bucket) {
-    contentElem.innerHTML = 'This is a snippet of contextual content for bucket [' + bucket + 's, ' + (bucket + interval) + 's)';
+    contentElem.innerHTML = 'This is a snippet of contextual content for bucket [' + bucket + 's, ' + (bucket + bucketSize) + 's)';
   });
 });

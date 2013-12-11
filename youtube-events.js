@@ -12,24 +12,27 @@
   };
 
   //'listen' for the youtube player to be ready by waiting for the global callback onYouTubePlayerReady to be called :/
-  var youtubePlayerReady = false;
-  var readyQueue = [];
-  var args;
+  var youtubePlayerReady = {};
+  var readyQueues = {};
   window.onYouTubePlayerReady = function(id) {
-    youtubePlayerReady = true;
-    args = arguments;
+    youtubePlayerReady[id] = true;
     
-    for (var i in readyQueue) {
-      readyQueue[i].apply(this, arguments);
+    if (readyQueues[id] !== undefined) {
+      for (var i in readyQueues[id]) {
+        readyQueues[id][i].apply(this, arguments);
+      }
     }
   };
 
-  var onReady = function(fn) {
-    if (youtubePlayerReady) {
-      fn.apply(this, args);
+  var onReady = function(id, fn) {
+    if (youtubePlayerReady[id]) {
+      window.setTimeout(function() { fn.call(this) }, 0);
     }
     else {
-      readyQueue.push(fn);
+      if (readyQueues[id] === undefined) {
+        readyQueues[id] = [];
+      }
+      readyQueues[id].push(fn);
     }
   };
 
@@ -47,19 +50,19 @@
       this.id = id;
 
       if (typeof options !== 'undefined') {
-        this.interval = options.interval || this.interval;
+        this.bucketSize = options.bucketSize || this.bucketSize;
       }
 
       this.registry = {};
 
       this.pollCallback = bind(this._pollCallback, this);
 
-      onReady(bind(this.setupPlayerEvents, this));
+      onReady(this.id, bind(this.setupPlayerEvents, this));
     };
 
-    //video time interval between events in seconds (e.g. interval of 5s will result in events at video time 0:00, 0:05, 0:10, ...)
+    //size of video time buckets in seconds (e.g. bucketSize of 5s will result in events at video time 0:00, 0:05, 0:10, ...)
     //this value can be a float
-    YoutubeEvents.prototype.interval = 5;
+    YoutubeEvents.prototype.bucketSize = 5;
 
     //how often to poll the video time in ms
     YoutubeEvents.prototype.pollInterval = 100;
@@ -83,7 +86,7 @@
 
     YoutubeEvents.prototype.updateCurrentBucket = function() {
       this.currentTime = this.player.getCurrentTime();
-      var bucket = Math.floor(this.currentTime / this.interval) * this.interval;
+      var bucket = Math.floor(this.currentTime / this.bucketSize) * this.bucketSize;
       if (this.currentBucket !== bucket) {
         this.currentBucket = bucket;
         this.trigger('bucket', this.currentTime, this.currentBucket);
@@ -123,14 +126,12 @@
       window[callbackName] = bind(this.stateChange, this);
       this.player.addEventListener('onStateChange', callbackName);
 
-      onReady(bind(this.ready, this));
+      onReady(this.id, bind(this.ready, this));
     };
 
-    YoutubeEvents.prototype.ready = function(id) {
-      if (this.id === id) {
-        this.updateCurrentBucket();
-        this.trigger('ready', this.currentTime);
-      }
+    YoutubeEvents.prototype.ready = function() {
+      this.updateCurrentBucket();
+      this.trigger('ready', this.currentTime);
     };
 
     YoutubeEvents.prototype.on = function(eventName, callback) {

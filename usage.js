@@ -1,5 +1,5 @@
 var options = {
-  interval: 5, //interval in seconds used to divide the video timeline into buckets
+  bucketSize: 5, //divide the video timeline into buckets of this size in seconds
   pollInterval: 100 //interval in milliseconds at which the playing video will be polled for its current position
 };
 
